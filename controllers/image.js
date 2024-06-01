@@ -1,20 +1,54 @@
-const Clarifai = require('clarifai');
-
 //Do not commit your api keys
 require('dotenv').config();
 const apiKey = process.env.API_KEY
 
+const {ClarifaiStub, grpc} = require("clarifai-nodejs-grpc");
+
+const stub = ClarifaiStub.grpc();
+
+const metadata = new grpc.Metadata();
+metadata.set("authorization", `Key ${apiKey}`);
+
+// const Clarifai = require('clarifai');
+// console.log(Clarifai);
+
 //You must add your own API key here from Clarifai.
-const app = new Clarifai.App({
-  apiKey: {apiKey}
-});
+// const app = new Clarifai.App({
+//   apiKey: {apiKey}
+// });
 
 const handleApiCall = (req, res) => {
-    app.models.predict('face-detection', req.body.input)
-        .then(data => {
-            res.json(data);
-        })
-        .catch(err => res.status(400).json('unable to work with api'))
+    stub.PostModelOutputs(
+        {
+            // This is the model ID of a publicly available General model. You may use any other public or custom model ID.
+            model_id: "face-detection",
+            inputs: [{data: {image: {url: req.body.input}}}]
+        },
+        metadata,
+        (err, response) => {
+            if (err) {
+                console.log("Error: " + err);
+                return;
+            }
+
+            if (response.status.code !== 10000) {
+                console.log("Received failed status: " + response.status.description + "\n" + response.status.details);
+                return;
+            }
+
+            console.log("Predicted concepts, with confidence values:")
+            for (const c of response.outputs[0].data.concepts) {
+                console.log(c.name + ": " + c.value);
+            }
+            res.json(response);
+        }
+    );
+
+    // app.models.predict('face-detection', req.body.input)
+    //     .then(data => {
+    //         res.json(data);
+    //     })
+    //     .catch(err => res.status(400).json('unable to work with api'))
 };
 
 const handleImage = (db) => (req, res) => {
