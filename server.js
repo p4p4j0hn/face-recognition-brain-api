@@ -26,6 +26,7 @@ const db = knex({
 });
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json()); // latest version of expressJS now comes with Body-Parser!
@@ -39,6 +40,6 @@ app.get('/profile/:id', profile.handleProfileGet(db));
 app.put('/image', image.handleImage(db));
 app.post('/imageurl', (req, res) => {image.handleApiCall(req, res)});
 
-app.listen(process.env.PORT || 3000, ()=> {
-  console.log('app is running on port `${process.env.PORT || 3000}`');
+app.listen(port, ()=> {
+  console.log(`app is running on port ${port}`);
 });
