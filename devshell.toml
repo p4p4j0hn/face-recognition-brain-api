@@ -31,4 +31,4 @@ command = """\
 [serviceGroups.database]
 description = "Runs a database in the background"
 [serviceGroups.database.services.postgres]
-command = "postgres -D $PGDATA -k $PGHOST -p 5555"
+command = "postgres -D $PGDATA -k $PGHOST -p $PGPORT"
