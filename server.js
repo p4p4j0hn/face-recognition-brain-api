@@ -9,15 +9,17 @@ const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
+require('dotenv').config();
+
 const db = knex({
   // Enter your own database information here based on what you created
   client: 'pg',
   connection: {
-    host : '127.0.0.1',
-    port : '5555',
-    user : 'john',
-    password : '',
-    database : 'smart-brain'
+    host : process.env.DATABASE_HOST,
+    port : process.env.DATABASE_PORT,
+    user : process.env.DATABASE_USER,
+    password : process.env.DATABASE_PASSWORD,
+    database : process.env.DATABASE_NAME
   }
 });
 
@@ -35,6 +37,6 @@ app.get('/profile/:id', profile.handleProfileGet(db));
 app.put('/image', image.handleImage(db));
 app.post('/imageurl', (req, res) => {image.handleApiCall(req, res)});
 
-app.listen(3000, ()=> {
-  console.log('app is running on port 3000');
+app.listen(process.env.PORT || 3000, ()=> {
+  console.log('app is running on port ${process.env.PORT || 3000}');
 });

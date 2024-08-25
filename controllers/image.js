@@ -1,6 +1,6 @@
 //Do not commit your api keys
 require('dotenv').config();
-const apiKey = process.env.API_KEY
+const apiKey = process.env.API_CLARIFAI
 
 const {ClarifaiStub, grpc} = require("clarifai-nodejs-grpc");
 
